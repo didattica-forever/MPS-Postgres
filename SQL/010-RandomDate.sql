@@ -110,9 +110,12 @@ BEGIN
 	randomnumber := floor(RANDOM() * (maxvalue - MINVALUE /*+ 1*/)) + minvalue;
 	RETURN randomnumber;
 END
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$ LANGUAGE plpgsql volatile;
 
-SELECT random_int(3, 5);
+
+SELECT random_int(0, 100)
+FROM generate_series(1, 20);
+SELECT random_int(0, 100);
 --
 -- Esempi di utilizzo
 --
