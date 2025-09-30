@@ -130,6 +130,43 @@ left join clienti a
 on a.id_cliente = b.id_cliente;
 
 
+--
+-- Full Join
+--
+SELECT *
+from clienti a 
+full join ordini b
+on a.id_cliente = b.id_cliente;
+
+-- elaborazione su null
+SELECT *
+from clienti a 
+full join ordini b
+on a.id_cliente = b.id_cliente
+WHERE a.id_cliente IS NULL OR b.id_ordine IS null;
+
+-- Full by Left & Right union
+SELECT *
+from clienti a 
+left join ordini b
+on a.id_cliente = b.id_cliente
+UNION
+SELECT *
+from clienti a 
+right join ordini b
+on a.id_cliente = b.id_cliente;
+
+-- Full by Left & Left invertita union
+-- select * viola le regole della union
+SELECT a.id_cliente, a.nome, b.id_ordine, b.valore
+from clienti a 
+left join ordini b
+on a.id_cliente = b.id_cliente
+UNION
+SELECT a.id_cliente, a.nome, b.id_ordine, b.valore
+from ordini b 
+left join clienti a
+on a.id_cliente = b.id_cliente;
 
 
 
