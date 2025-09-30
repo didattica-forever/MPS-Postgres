@@ -30,7 +30,108 @@ insert into ordini values (4, to_date('24/11/2018', 'DD/MM/YYYY') ,4589.00,  3);
 insert into ordini values (5, to_date('13/07/2018', 'DD/MM/YYYY') ,230.00,  10);
 insert into ordini values (6, to_date('01/06/2018', 'DD/MM/YYYY') ,144.00,   9);
 
+-- tabella clienti
+SELECT * FROM clienti;
+
+-- tabella ordini
+SELECT * FROM ordini;
+
+
+-- abbinamento INNER THETA JOIN tra clenti ordini
+SELECT * 
+from clienti c, ordini o
+WHERE c.id_cliente = o.id_cliente; -- theta clause è FILTRO IN USCITA AL PRODOTTO CARTESIANO
+
+SELECT * 
+from clienti C
+cross join ordini o
+WHERE c.id_cliente = o.id_cliente; -- theta clause è FILTRO IN USCITA AL PRODOTTO CARTESIANO
+
+
 
 -- 
--- Join DEMO
+-- Inner Join DEMO
 --
+
+SELECT * 
+from clienti a 
+inner join ordini b 
+on a.id_cliente = b.id_cliente -- on è la clausola di match della join
+;
+
+SELECT * 
+from clienti a 
+inner join ordini b 
+on a.id_cliente = b.id_cliente -- on è la clausola di match della join
+WHERE a.provincia = 'LU'
+;
+
+SELECT * 
+from clienti a 
+inner join ordini b 
+on a.id_cliente = b.id_cliente and a.provincia = 'LU' -- il filtro viene incorporato nella clausola on
+;
+
+SELECT * 
+from clienti a 
+inner join ordini b 
+on a.id_cliente = b.id_cliente and a.provincia != 'LU' -- il filtro viene incorporato nella clausola on
+;
+
+--
+-- Left Join
+--
+SELECT *
+from clienti a 
+left join ordini b
+on a.id_cliente = b.id_cliente;
+
+-- Left with exclusion
+SELECT *
+from clienti a 
+left join ordini b
+on a.id_cliente = b.id_cliente
+WHERE id_ordine IS NULL;
+
+-- inner by Left join
+SELECT *
+from clienti a 
+left join ordini b
+on a.id_cliente = b.id_cliente
+WHERE id_ordine IS NOT NULL;
+
+
+--
+-- Right join
+--
+SELECT *
+from clienti a 
+right join ordini b
+on a.id_cliente = b.id_cliente;
+
+-- Right with exclusion
+SELECT *
+from clienti a 
+right join ordini b
+on a.id_cliente = b.id_cliente
+WHERE a.id_cliente IS NULL;
+
+-- Inner by Right join
+SELECT *
+from clienti a 
+right join ordini b
+on a.id_cliente = b.id_cliente
+WHERE a.id_cliente IS not NULL;
+
+-- Right by Left join
+SELECT * 
+from ordini b  
+left join clienti a 
+on a.id_cliente = b.id_cliente;
+
+
+
+
+
+
+
