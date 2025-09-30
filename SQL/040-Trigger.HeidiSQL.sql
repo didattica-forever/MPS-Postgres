@@ -62,7 +62,7 @@ SELECT * FROM clienti
 WHERE created_at <> updated_at
 ;
 
--- Delimiter -- // -- cambio -- Delimiter a causa di HeidiSQL
+DELIMITER // -- cambio delimiter a causa di HeidiSQL
 CREATE OR REPLACE FUNCTION update_clienti_timestamp()
 RETURNS trigger AS $$
 DECLARE
@@ -79,7 +79,7 @@ BEGIN
 	RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
--- //
+//
 
 CREATE OR REPLACE TRIGGER trig_clienti_timestamp_update
 AFTER UPDATE ON clienti
@@ -87,9 +87,9 @@ FOR EACH ROW
 
 EXECUTE FUNCTION update_clienti_timestamp()
 ;
--- //
+//
 
--- Delimiter -- // -- cambio -- Delimiter a causa di HeidiSQL
+DELIMITER // -- cambio delimiter a causa di HeidiSQL
 -- se cambia il flag abilitato devo attivare un trigger
 -- che blocchi tutti gli ordini di quel cliente
 CREATE OR REPLACE FUNCTION disabilita_riabilita_ordini()
@@ -112,7 +112,7 @@ BEGIN
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
--- //
+//
 
 CREATE OR REPLACE TRIGGER trig_clienti_enable_disabòe
 AFTER UPDATE ON clienti
@@ -120,8 +120,8 @@ FOR EACH ROW
 
 EXECUTE FUNCTION disabilita_riabilita_ordini()
 ;
--- //
--- Delimiter -- // -- cambio -- Delimiter a causa di HeidiSQL
+//
+DELIMITER // -- cambio delimiter a causa di HeidiSQL
 CREATE OR REPLACE FUNCTION log_history_clienti()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -177,15 +177,15 @@ BEGIN
    RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
--- //
+//
 
 CREATE or replace TRIGGER trigger_clienti_history
 AFTER INSERT OR UPDATE OR DELETE ON Clienti
 FOR EACH ROW
 EXECUTE FUNCTION log_history_clienti();
--- //
+//
 
--- Delimiter -- // -- cambio -- Delimiter a causa di HeidiSQL
+DELIMITER // -- cambio delimiter a causa di HeidiSQL
 CREATE OR REPLACE FUNCTION prova_function_call_02()
 RETURNS integer AS $$
 DECLARE
@@ -195,10 +195,10 @@ BEGIN
    RETURN 100;
 END;
 $$ LANGUAGE plpgsql;
--- //
+//
 
 
--- Delimiter -- // -- cambio -- Delimiter a causa di HeidiSQL
+DELIMITER // -- cambio delimiter a causa di HeidiSQL
 CREATE OR REPLACE FUNCTION prova_function_call_01()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -210,7 +210,7 @@ BEGIN
    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
--- //
+//
 
 
 
@@ -218,4 +218,4 @@ CREATE or replace TRIGGER trigger_prova_data
 AFTER INSERT OR UPDATE OR DELETE ON prova_data
 FOR EACH ROW
 EXECUTE FUNCTION prova_function_call_01();
--- //
+//
