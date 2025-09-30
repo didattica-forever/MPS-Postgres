@@ -3,6 +3,21 @@ La funzione calcola un numero casuale di giorni all'interno dell'intervallo spec
 garantendo che la data risultante sia compresa tra i due estremi.
 DATE: per garantire che la funzione lavori esclusivamente con date (senza informazioni sull'ora).
 IMMUTABLE: perché la funzione restituisce sempre lo stesso risultato per gli stessi argomenti in un contesto di transazione, rendendola ottimizzata per l'indicizzazione e la cache.
+
+A VOLATILE function can do anything, including modifying the database. 
+It can return different results on successive calls with the same arguments. 
+The optimizer makes no assumptions about the behavior of such functions. 
+A query using a volatile function will re-evaluate the function at every row where its value is needed.
+
+A STABLE function cannot modify the database and is guaranteed to return the same results given the same arguments for all rows within a single statement. 
+This category allows the optimizer to optimize multiple calls of the function to a single call. 
+In particular, it is safe to use an expression containing such a function in an index scan condition. 
+(Since an index scan will evaluate the comparison value only once, not once at each row, it is not valid to use a VOLATILE function in an index scan condition.)
+
+An IMMUTABLE function cannot modify the database and is guaranteed to return the same results given the same arguments forever. 
+This category allows the optimizer to pre-evaluate the function when a query calls it with constant arguments. 
+For example, a query like SELECT ... WHERE x = 2 + 2 can be simplified on sight to SELECT ... WHERE x = 4, because the function underlying the integer addition operator is marked IMMUTABLE.
+
 */
 CREATE OR REPLACE FUNCTION generate_random_date(
     min_date DATE,
@@ -35,10 +50,12 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 -- esempi di utilizzo
 --
 SELECT generate_random_date('2020-01-01'::DATE, CURRENT_DATE);
+SELECT generate_random_date('2025-12-31', '2015-05-01' );
 
 SELECT generate_random_date('2015-05-01', '2025-12-31') -- genera 10 date casuali
 FROM generate_series(1, 10);
 
+SELECT RANDOM();
 
 /*
 Funzione in PL/pgSQL che accetta min_dt e max_dt come TIMESTAMP WITH TIME ZONE (il tipo più robusto per data/ora)
@@ -82,10 +99,24 @@ END;
 $$ LANGUAGE plpgsql VOLATILE;
 
 
+/*
+genera un integer tra due valori upper bound escluso
+*/
+CREATE OR REPLACE FUNCTION random_int(minvalue integer, maxvalue integer)
+RETURNS INTeger AS $$
+DECLARE
+	randomnumber INTEGER;
+BEGIN
+	randomnumber := floor(RANDOM() * (maxvalue - MINVALUE /*+ 1*/)) + minvalue;
+	RETURN randomnumber;
+END
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+SELECT random_int(3, 5);
 --
 -- Esempi di utilizzo
 --
-Chiamata	Risultato
+-- Chiamata	Risultato
 SELECT random_date_time();	-- Restituisce un TIMESTAMP casuale tra l'inizio del 2000 e l'ora attuale.
 SELECT random_date_time('2023-01-01');	-- Restituisce un TIMESTAMP casuale tra '2023-01-01 00:00:00' e l'ora attuale.
 SELECT random_date_time(NULL, '2025-01-01');	-- Restituisce un TIMESTAMP casuale tra l'inizio del 2000 e '2025-01-01 00:00:00'.
